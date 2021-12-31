@@ -1,18 +1,7 @@
 #include <Arduino.h>
-#include <Wire.h>
-#include <WiFi.h>
-#include <Preferences.h>
-
-#include <FastLED.h>
-
-#include "time.h"
-
-#include "RTClib.h"
-
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
-#include <global_variables.h>
 
 // BLE SECTION
 BLEServer *pServer = NULL;
@@ -51,14 +40,13 @@ class CharacteristicsCallbacks : public BLECharacteristicCallbacks
     if (pCharacteristic == box_characteristic)
     {
       boxValue = pCharacteristic->getValue().c_str();
-      box_characteristic->setValue(boxValue);
+      box_characteristic->setValue(const_cast<char *>(boxValue.c_str()));
       box_characteristic->notify();
     }
   }
-}
+};
 
-void
-setup()
+void setup()
 {
   Serial.begin(115200);
 
@@ -68,19 +56,19 @@ setup()
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
   // Create the BLE Service
-  BLEService *pService = pServer->createService(GENERAL_SERVICE_UUID);
+  BLEService *pService = pServer->createService(SERVICE_UUID);
   delay(100);
 
   // Create a BLE Characteristic
-  nightmode_characteristic = pNightService->createCharacteristic(
-      NIGHTMODE_CHARACTERISTIC_UUID,
+  message_characteristic = pService->createCharacteristic(
+      MESSAGE_CHARACTERISTIC_UUID,
       BLECharacteristic::PROPERTY_READ |
           BLECharacteristic::PROPERTY_WRITE |
           BLECharacteristic::PROPERTY_NOTIFY |
           BLECharacteristic::PROPERTY_INDICATE);
 
-  nightmodebright_characteristic = pNightService->createCharacteristic(
-      NIGHTMODEBRIGHT_CHARACTERISTIC_UUID,
+  box_characteristic = pService->createCharacteristic(
+      BOX_CHARACTERISTIC_UUID,
       BLECharacteristic::PROPERTY_READ |
           BLECharacteristic::PROPERTY_WRITE |
           BLECharacteristic::PROPERTY_NOTIFY |
@@ -92,24 +80,24 @@ setup()
   // Start advertising
   pServer->getAdvertising()->start();
 
-  nightmode_characteristic->setValue("Message one");
-  nightmode_characteristic->setCallbacks(new CharacteristicsCallbacks());
+  message_characteristic->setValue("Message one");
+  message_characteristic->setCallbacks(new CharacteristicsCallbacks());
 
-  nightmodebright_characteristic->setValue("0");
-  nightmodebright_characteristic->setCallbacks(new CharacteristicsCallbacks());
+  box_characteristic->setValue("0");
+  box_characteristic->setCallbacks(new CharacteristicsCallbacks());
 
   Serial.println("Waiting for a client connection to notify...");
 }
 
 void loop()
 {
-  nightmode_characteristic->setValue("Message one");
-  nightmode_characteristic->setCallbacks(new CharacteristicsCallbacks());
+  message_characteristic->setValue("Message one");
+  message_characteristic->notify();
 
   delay(1000);
 
-  nightmode_characteristic->setValue("Message Two");
-  nightmode_characteristic->setCallbacks(new CharacteristicsCallbacks());
+  message_characteristic->setValue("Message Two");
+  message_characteristic->notify();
 
   delay(1000);
 }

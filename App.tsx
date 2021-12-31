@@ -20,8 +20,8 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const BLTManager = new BleManager();
 
-const SERVICE_UUID = '6d68efe5-04b6-4a85-abc4-c2670b7bf7fd';
-const MESSAGE_UUID = '0d8518ba-ed68-4583-a85e-6352b7bba0bc';
+const SERVICE_UUID = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
+const MESSAGE_UUID = '6d68efe5-04b6-4a85-abc4-c2670b7bf7fd';
 const BOX_UUID = 'f27b53ad-c63d-49a0-8c0f-9f297e6cc520';
 
 function StringToBool(input: String) {
@@ -70,7 +70,7 @@ export default function App() {
           console.warn(error);
         }
 
-        if (scannedDevice && scannedDevice.name == 'ESP32BLE') {
+        if (scannedDevice && scannedDevice.name == 'BLEExample') {
           BLTManager.stopDeviceScan();
           connectDevice(scannedDevice);
         }
@@ -170,8 +170,7 @@ export default function App() {
           MESSAGE_UUID,
           (error, characteristic) => {
             if (characteristic?.value != null) {
-              console.log(error);
-              setMessage(base64.decode(valenc?.value));
+              setMessage(base64.decode(characteristic?.value));
               console.log(
                 'Message update received: ',
                 base64.decode(characteristic?.value),
@@ -187,15 +186,14 @@ export default function App() {
           BOX_UUID,
           (error, characteristic) => {
             if (characteristic?.value != null) {
-              console.log(error);
-              setBoxValue(StringToBool(base64.decode(valenc?.value)));
+              setBoxValue(StringToBool(base64.decode(characteristic?.value)));
               console.log(
                 'Box Value update received: ',
                 base64.decode(characteristic?.value),
               );
             }
           },
-          'messagetransaction',
+          'boxtransaction',
         );
 
         console.log('Connection established');
@@ -252,8 +250,8 @@ export default function App() {
           disabled={false}
           value={boxvalue}
           onValueChange={newValue => {
-            setBoxValue(newValue);
-            sendBoxValue(newValue);
+            // setBoxValue(newValue);
+            sendBoxValue(BoolToString(newValue));
           }}
         />
       </View>
