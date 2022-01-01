@@ -8,6 +8,7 @@ BLEServer *pServer = NULL;
 
 BLECharacteristic *message_characteristic = NULL;
 BLECharacteristic *box_characteristic = NULL;
+
 String boxValue = "0";
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/

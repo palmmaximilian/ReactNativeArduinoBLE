@@ -21,6 +21,7 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 const BLTManager = new BleManager();
 
 const SERVICE_UUID = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
+
 const MESSAGE_UUID = '6d68efe5-04b6-4a85-abc4-c2670b7bf7fd';
 const BOX_UUID = 'f27b53ad-c63d-49a0-8c0f-9f297e6cc520';
 
@@ -118,18 +119,6 @@ export default function App() {
   }
   //Connect the device and start monitoring characteristics
   async function connectDevice(device: Device) {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'Permission Localisation Bluetooth',
-        message: 'Requirement for Bluetooth',
-        buttonNeutral: 'Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
-    console.log(granted);
-
     console.log('connecting to Device:', device.name);
 
     device
