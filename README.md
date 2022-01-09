@@ -1,6 +1,7 @@
 # React Native Arduino BLE Example
 
 An example project on how to communicate between an esp32 and a React Native app over Bluetooth low energy
+A video showing the app can be found [here](https://www.youtube.com/watch?v=erWibryA_tE)
 
 ## What is the purpose of this project?
 
